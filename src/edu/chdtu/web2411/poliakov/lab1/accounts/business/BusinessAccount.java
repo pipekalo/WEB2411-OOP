@@ -1,12 +1,12 @@
 package edu.chdtu.web2411.poliakov.lab1.accounts.business;
 
-import edu.chdtu.web2411.poliakov.lab1.BankAccount;
+import edu.chdtu.web2411.poliakov.lab1.Account;
 import edu.chdtu.web2411.poliakov.lab1.enums.AccountType;
-import edu.chdtu.web2411.poliakov.lab1.interfaces.Calculator;
-import edu.chdtu.web2411.poliakov.lab1.interfaces.Operation;
+import edu.chdtu.web2411.poliakov.lab1.interfaces.Function;
+import edu.chdtu.web2411.poliakov.lab1.interfaces.Predicate;
 
 
-public class BusinessAccount extends BankAccount implements Calculator<Integer, Double> {
+public class BusinessAccount extends Account {
     protected String companyName;
     protected double creditLimit;
     protected double interestRate;
@@ -21,7 +21,7 @@ public class BusinessAccount extends BankAccount implements Calculator<Integer, 
 
     @Override
     public boolean withdraw(double amount) {
-        Operation<Double> businessWithdraw = amt -> {
+        Predicate<Double> businessWithdraw = amt -> {
             double available = this.balance + this.creditLimit;
             if(amt > 0 && amt <= available) {
                 this.balance -= amt;
@@ -32,10 +32,12 @@ public class BusinessAccount extends BankAccount implements Calculator<Integer, 
         return businessWithdraw.execute(amount);
     }
 
-    @Override
     public Double calculateInterest(Integer days) {
-        if(this.balance >= 0) return 0.0;
-        double overdraft = -balance;
-        return  Math.floor((overdraft * this.interestRate * days) / (365 * 100));
+        Function<Integer, Double> calculate = value -> {
+            if (balance >= 0) return 0.0;
+            double overdraft = -balance;
+            return Math.floor((overdraft * this.interestRate * value) / (365 * 100));
+        };
+        return calculate.execute(days);
     }
 }

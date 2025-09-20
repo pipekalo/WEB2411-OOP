@@ -1,20 +1,20 @@
 package edu.chdtu.web2411.poliakov.lab1;
 
-import edu.chdtu.web2411.poliakov.lab1.interfaces.operations.BankOperations;
-import edu.chdtu.web2411.poliakov.lab1.interfaces.Operation;
+import edu.chdtu.web2411.poliakov.lab1.interfaces.operations.Bank;
+import edu.chdtu.web2411.poliakov.lab1.interfaces.Predicate;
 
 import java.util.ArrayList;
 
-public class BankStorage implements BankOperations {
-    protected ArrayList<BankAccount> bankAccounts;
+public class BankStorage implements Bank {
+    protected ArrayList<Account> bankAccounts;
 
     public BankStorage() {
         bankAccounts = new ArrayList<>();
     }
 
     @Override
-    public boolean addAccount(BankAccount account) {
-        Operation<BankAccount> accountOperation = acc -> {
+    public boolean addAccount(Account account) {
+        Predicate<Account> accountOperation = acc -> {
             this.bankAccounts.add(acc);
             return true;
         };

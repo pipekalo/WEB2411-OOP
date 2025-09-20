@@ -1,12 +1,12 @@
 package edu.chdtu.web2411.poliakov.lab1.accounts.personal;
 
-import edu.chdtu.web2411.poliakov.lab1.BankAccount;
+import edu.chdtu.web2411.poliakov.lab1.Account;
 import edu.chdtu.web2411.poliakov.lab1.enums.AccountType;
-import edu.chdtu.web2411.poliakov.lab1.interfaces.Calculator;
-import edu.chdtu.web2411.poliakov.lab1.interfaces.Operation;
-import edu.chdtu.web2411.poliakov.lab1.interfaces.operations.PersonalOperations;
+import edu.chdtu.web2411.poliakov.lab1.interfaces.Function;
+import edu.chdtu.web2411.poliakov.lab1.interfaces.Predicate;
+import edu.chdtu.web2411.poliakov.lab1.interfaces.operations.User;
 
-public class PersonalAccount extends BankAccount implements PersonalOperations, Calculator<Integer, Double> {
+public class PersonalAccount extends Account implements User {
     protected double limitPerDay;
     protected double interestRate = 10;
 
@@ -24,8 +24,8 @@ public class PersonalAccount extends BankAccount implements PersonalOperations, 
 
     @Override
     public boolean withdraw(double amount) {
-        Operation<Double> personalWithdraw = amt -> {
-            if((this.balance - amt) <= this.limitPerDay && (this.balance - amt > 0)) {
+        Predicate<Double> personalWithdraw = amt -> {
+            if ((this.balance - amt) <= this.limitPerDay && (this.balance - amt > 0)) {
                 this.limitPerDay -= amt;
                 this.balance -= amt;
                 return true;
@@ -37,17 +37,19 @@ public class PersonalAccount extends BankAccount implements PersonalOperations, 
 
     @Override
     public double calculateCashback(double amountSpent, double cashbackPercent) {
-        if(this.balance < amountSpent) return 0;
+        if (this.balance < amountSpent) return 0;
         this.balance -= amountSpent;
         double cashback = (amountSpent / 100) * cashbackPercent;
         return this.balance += cashback;
     }
 
-    @Override
     public Double calculateInterest(Integer days) {
-        if(balance >= 0 ) return 0.0;
-        double overdraft = -balance;
-        return Math.floor((overdraft * this.interestRate * days) / (365 * 100));
+        Function<Integer, Double> calculate = value -> {
+            if (balance >= 0) return 0.0;
+            double overdraft = -balance;
+            return Math.floor((overdraft * this.interestRate * value) / (365 * 100));
+        };
+        return calculate.execute(days);
     }
 
 }
