@@ -1,4 +1,4 @@
-package edu.chdtu.web2411.poliakov.lab1.math;
+package edu.chdtu.web2411.poliakov.math;
 
 import java.util.ArrayList;
 import java.util.HashSet;

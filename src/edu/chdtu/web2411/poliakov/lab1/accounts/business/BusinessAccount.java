@@ -1,6 +1,6 @@
 package edu.chdtu.web2411.poliakov.lab1.accounts.business;
 
-import edu.chdtu.web2411.poliakov.lab1.Account;
+import edu.chdtu.web2411.poliakov.lab1.accounts.Account;
 import edu.chdtu.web2411.poliakov.lab1.enums.AccountType;
 import edu.chdtu.web2411.poliakov.lab1.interfaces.Function;
 import edu.chdtu.web2411.poliakov.lab1.interfaces.Predicate;
