@@ -1,58 +1,62 @@
 package edu.chdtu.web2411.poliakov.lab3;
 
+import edu.chdtu.web2411.poliakov.lab3.commands.ExitCommand;
 import edu.chdtu.web2411.poliakov.lab3.commands.project.ChoiceProjectCommand;
 import edu.chdtu.web2411.poliakov.lab3.commands.project.CreateProjectCommand;
+import edu.chdtu.web2411.poliakov.lab3.commands.project.GenerateReportCommand;
 import edu.chdtu.web2411.poliakov.lab3.commands.project.ReadProjectCommand;
 import edu.chdtu.web2411.poliakov.lab3.impls.MenuCommand;
-import edu.chdtu.web2411.poliakov.lab3.services.ConsoleService;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ProjectManager {
-    private List<Project> projectList;
     private Map<String, MenuCommand> operations;
-    private ConsoleService consoleService;
+    private ConsoleWriter consoleWriter;
 
     public ProjectManager() {
-        this.projectList = new ArrayList<>();
         this.operations = new HashMap<>();
-        this.consoleService = new ConsoleService();
+        this.consoleWriter = new ConsoleWriter();
 
         initializeOperations();
     }
 
     private void initializeOperations() {
-        operations.put("1", new CreateProjectCommand(projectList));
-        operations.put("2", new ReadProjectCommand(projectList));
-        operations.put("3", new ChoiceProjectCommand(projectList));
+        operations.put("1", new CreateProjectCommand());
+        operations.put("2", new ReadProjectCommand());
+        operations.put("3", new ChoiceProjectCommand());
+        operations.put("4", new GenerateReportCommand());
+        operations.put("0", new ExitCommand());
     }
 
     private void showMenu() {
-        consoleService.print("\n╔════════════════════════════════════╗");
-        consoleService.print("║   PROJECT MANAGER - ГОЛОВНЕ МЕНЮ   ║");
-        consoleService.print("╠════════════════════════════════════╣");
-        consoleService.print("║ 1. Додати проект                   ║");
-        consoleService.print("║ 2. Переглянути всі проекти         ║");
-        consoleService.print("║ 3. Обрати проект                   ║");
-        consoleService.print("║ 0. Вихід                           ║");
-        consoleService.print("╚════════════════════════════════════╝");
+        this.consoleWriter.print("\n╔════════════════════════════════════╗");
+        this.consoleWriter.print("║   PROJECT MANAGER - ГОЛОВНЕ МЕНЮ   ║");
+        this.consoleWriter.print("╠════════════════════════════════════╣");
+        this.consoleWriter.print("║ 1. Додати проект                   ║");
+        this.consoleWriter.print("║ 2. Переглянути всі проекти         ║");
+        this.consoleWriter.print("║ 3. Обрати проект                   ║");
+        this.consoleWriter.print("║ 4. Формування звіту                ║");
+        this.consoleWriter.print("║ 0. Вихід                           ║");
+        this.consoleWriter.print("╚════════════════════════════════════╝");
     }
 
     public void run() {
         while (true) {
-            showMenu();
-            String choice = consoleService.readLine("Виберіть дію: ");
+            try {
+                showMenu();
+                String choice = this.consoleWriter.readLine("Виберіть дію: ");
 
-            MenuCommand operation = operations.get(choice);
-            if(operation != null) {
-                operation.execute();
-            } else if (choice.equals("0")) {
+                MenuCommand operation = operations.get(choice);
+                if(operation != null) {
+                    operation.execute();
+                } else {
+                    this.consoleWriter.print("Невірний вибір. Спробуйте знову.");
+                }
+            } catch (IOException e) {
+                this.consoleWriter.print("Помилка читання введення: " + e);
                 break;
-            } else {
-                consoleService.print("Невірний вибір. Спробуйте знову.");
             }
         }
     }

@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 public class Task implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String title;
     private String description;
@@ -35,6 +38,14 @@ public class Task implements Serializable {
 
     public int getPriority() {
         return priority;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public void setTitle(String title) {

@@ -2,25 +2,29 @@ package edu.chdtu.web2411.poliakov.lab3.commands.project;
 
 import edu.chdtu.web2411.poliakov.lab3.Project;
 import edu.chdtu.web2411.poliakov.lab3.impls.MenuCommand;
-import edu.chdtu.web2411.poliakov.lab3.services.ConsoleService;
+import edu.chdtu.web2411.poliakov.lab3.ConsoleWriter;
+import edu.chdtu.web2411.poliakov.lab3.services.ProjectService;
 
-import java.util.List;
+import java.util.ArrayList;
+
 
 public class CreateProjectCommand implements MenuCommand {
-    private ConsoleService consoleService;
-    private List<Project> projectList;
+    private ConsoleWriter consoleWriter;
+    private ProjectService projectService;
 
-    public CreateProjectCommand(List<Project> projectList) {
-        this.projectList = projectList;
-        this.consoleService = new ConsoleService();
+    public CreateProjectCommand() {
+        this.consoleWriter = new ConsoleWriter();
+        this.projectService = ProjectService.getInstance();
     }
 
     @Override
     public void execute() {
-        String title = consoleService.readLine("Введіть заголовок для проекту: ");
+        String title = consoleWriter.readLine("Введіть заголовок для проекту: ");
 
-        Project project = new Project(projectList.size() + 1, title);
-        projectList.add(project);
-        consoleService.print("Проект створено. ID: " + project.getId());
+        Project project = new Project(projectService.getAll().size() + 1, title, new ArrayList<>());
+
+        if(projectService.add(project)) {
+            consoleWriter.print("Проект створено. ID: " + project.getId());
+        }
     }
 }

@@ -1,34 +1,34 @@
 package edu.chdtu.web2411.poliakov.lab3.commands.task;
 
-import edu.chdtu.web2411.poliakov.lab3.services.ConsoleService;
 import edu.chdtu.web2411.poliakov.lab3.Task;
 import edu.chdtu.web2411.poliakov.lab3.impls.MenuCommand;
+import edu.chdtu.web2411.poliakov.lab3.ConsoleWriter;
+import edu.chdtu.web2411.poliakov.lab3.services.TaskService;
 
-import java.util.List;
 
 public class RemoveTaskCommand implements MenuCommand {
-    private List<Task> taskList;
-    private ConsoleService consoleService;
+    private ConsoleWriter consoleWriter;
 
-    public RemoveTaskCommand(List<Task> taskList) {
-        this.taskList = taskList;
-        this.consoleService = new ConsoleService();
+    public RemoveTaskCommand() {
+        this.consoleWriter = new ConsoleWriter();
     }
 
     @Override
     public void execute() {
-        int id = consoleService.readInt("Введіть ID завдання: ");
-        Task task = taskList.stream().filter(t -> t.getId() == id).findFirst().orElse(null);
+        int id = consoleWriter.readInt("Введіть ID завдання: ");
+
+        TaskService taskService = TaskService.getInstance();
+
+        Task task = taskService.getAll().stream().filter(t -> t.getId() == id).findFirst().orElse(null);
 
         if(task == null) {
-            consoleService.print("Задача не знайдена");
+            consoleWriter.print("Задача не знайдена");
             return;
         }
 
-        String answer = consoleService.readLine("Ви впевнені, що хочете видалити завдання? (y/n): ");
-        if(answer.equals("y") || answer.equals("yes")) {
-            taskList.removeIf(t -> t.getId() == task.getId());
-            consoleService.print("Завдання видалено!");
+        String answer = consoleWriter.readLine("Ви впевнені, що хочете видалити завдання? (y/n): ");
+        if((answer.equals("y") || answer.equals("yes")) && taskService.remove(id)) {
+                consoleWriter.print("Завдання видалено!");
         }
     }
 }

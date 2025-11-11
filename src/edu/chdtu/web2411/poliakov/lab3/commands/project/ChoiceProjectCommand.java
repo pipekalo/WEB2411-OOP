@@ -3,32 +3,40 @@ package edu.chdtu.web2411.poliakov.lab3.commands.project;
 import edu.chdtu.web2411.poliakov.lab3.Project;
 import edu.chdtu.web2411.poliakov.lab3.TaskManager;
 import edu.chdtu.web2411.poliakov.lab3.impls.MenuCommand;
-import edu.chdtu.web2411.poliakov.lab3.services.ConsoleService;
+import edu.chdtu.web2411.poliakov.lab3.ConsoleWriter;
+import edu.chdtu.web2411.poliakov.lab3.services.ProjectService;
+import edu.chdtu.web2411.poliakov.lab3.services.TaskService;
 
-import java.util.List;
+import java.util.Optional;
+
 
 public class ChoiceProjectCommand implements MenuCommand {
-    private List<Project> projectList;
-    private ConsoleService consoleService;
+    private ConsoleWriter consoleWriter;
+    private ProjectService projectService;
+    private TaskService taskService;
 
-    public ChoiceProjectCommand(List<Project> projectList) {
-        this.projectList = projectList;
-        this.consoleService = new ConsoleService();
+    public ChoiceProjectCommand() {
+        this.consoleWriter = new ConsoleWriter();
+        this.projectService = ProjectService.getInstance();
+        this.taskService = TaskService.getInstance();
     }
 
 
     @Override
     public void execute() {
-        int id = consoleService.readInt("Введіть ID проекту:");
-        Project project = projectList.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+        int id = consoleWriter.readInt("Введіть ID проекту:");
 
-        if(project == null) {
-            consoleService.print("Проект не знайдено");
+        Optional<Project> projectOptional = this.projectService.getById(id);
+
+        if(projectOptional.isEmpty()) {
+            consoleWriter.print("Проект не знайдено");
             return;
         }
 
-        TaskManager taskManager = new TaskManager(project.getTaskList());
+        Project project = projectOptional.get();
+
+        TaskManager taskManager = new TaskManager();
         taskManager.run();
-        project.setTaskList(taskManager.getTaskList());
+        project.setTaskList(this.taskService.getAll());
     }
 }

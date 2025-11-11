@@ -1,24 +1,30 @@
 package edu.chdtu.web2411.poliakov.lab3;
 
 import edu.chdtu.web2411.poliakov.lab3.enums.TaskType;
-import edu.chdtu.web2411.poliakov.lab3.services.ConsoleService;
+import edu.chdtu.web2411.poliakov.lab3.services.TaskService;
 
 import java.util.List;
 
 public class Pagination {
     private int currentPage;
     private int limitPerPage;
-    private List<Task> taskList;
-    private  List<Task> originaTasklList;
+    private TaskService taskService;
+    private List<Task> displayTasks;
+    private boolean isFiltered = false;
 
-    private ConsoleService consoleService;
+    private ConsoleWriter consoleWriter;
 
-    public Pagination(int limitPerPage, int currentPage, List<Task> taskList) {
+    public Pagination(int limitPerPage, int currentPage) {
         this.limitPerPage = limitPerPage;
         this.currentPage = currentPage;
-        this.taskList = taskList;
-        this.originaTasklList = taskList;
-        this.consoleService = new ConsoleService();
+        this.consoleWriter = new ConsoleWriter();
+        this.taskService = TaskService.getInstance();
+        this.displayTasks = null;
+        this.isFiltered = false;
+    }
+
+    private List<Task> getDisplayTasks() {
+        return isFiltered ? this.displayTasks : this.taskService.getAll();
     }
 
     private int getCurrentPage() {
@@ -26,14 +32,14 @@ public class Pagination {
     }
 
     private int getTotalPages() {
-        return (int) Math.ceil((double) this.taskList.size() / this.limitPerPage);
+        return (int) Math.ceil((double) this.getDisplayTasks().size() / this.limitPerPage);
     }
 
     private void nextPage() {
         if (this.currentPage < this.getTotalPages()) {
             this.currentPage++;
         } else {
-            consoleService.print("Ви на останній сторінці!");
+            consoleWriter.print("Ви на останній сторінці!");
         }
     }
 
@@ -41,7 +47,7 @@ public class Pagination {
         if (this.currentPage > 1) {
             this.currentPage--;
         } else {
-            consoleService.print("Ви на першій сторінці!");
+            consoleWriter.print("Ви на першій сторінці!");
         }
     }
 
@@ -49,7 +55,7 @@ public class Pagination {
         if (page >= 1 && page <= this.getTotalPages()) {
             this.currentPage = page;
         } else {
-            consoleService.print("Неправильний номер сторінки!");
+            consoleWriter.print("Неправильний номер сторінки!");
         }
     }
 
@@ -62,94 +68,97 @@ public class Pagination {
     }
 
     private void filterByPriority() {
-        int priority = consoleService.readInt("Введите число от 1 до 5 чтобы отфильтровать список: ");
-        this.taskList = taskList.stream().filter(task -> task.getPriority() == priority).toList();
+        int priority = consoleWriter.readInt("Введите число от 1 до 5 чтобы отфильтровать список: ");
+        this.displayTasks = this.taskService.getAll().stream().filter(task -> task.getPriority() == priority).toList();
+        this.currentPage = 1;
+
+        this.isFiltered = true;
+
+        if (this.displayTasks.isEmpty()) {
+            consoleWriter.print("Немає завдань з таким пріоритетом!");
+        }
     }
 
     private void filterByStatus() {
-        consoleService.print("\nВсі статуси:");
-        consoleService.print("1. TODO");
-        consoleService.print("2. IN_PROGRESS");
-        consoleService.print("3. DONE");
+        consoleWriter.print("\nВсі статуси:");
+        consoleWriter.print("1. TODO");
+        consoleWriter.print("2. IN_PROGRESS");
+        consoleWriter.print("3. DONE");
 
-        String choice = consoleService.readLine("Виберіть статус для фільтрації за ним: ");
+        String choice = consoleWriter.readLine("Виберіть статус для фільтрації за ним: ");
 
-        TaskType taskType;
-        switch (choice) {
-            case "1":
-                taskType = TaskType.TODO;
-                break;
-            case "2":
-                taskType = TaskType.IN_PROGRESS;
-                break;
-            case "3":
-                taskType = TaskType.DONE;
-                break;
-            default:
-                consoleService.print("Неправильний вибір");
-                return;
-        }
+        TaskType taskType = switch (choice) {
+            case "1" -> TaskType.TODO;
+            case "2" -> TaskType.IN_PROGRESS;
+            case "3" -> TaskType.DONE;
+            default -> {
+                consoleWriter.print("Неправильний вибір");
+                yield null;
+            }
+        };
+        this.isFiltered = true;
+        this.displayTasks = this.taskService.getAll().stream().filter(task -> task.getTaskType().equals(taskType)).toList();
+    }
 
-        this.taskList = taskList.stream().filter(task -> task.getTaskType().equals(taskType)).toList();
+    private void clearFilter() {
+        this.displayTasks = List.copyOf(this.taskService.getAll());
+        this.currentPage = 1;
+        this.isFiltered = false;
+        consoleWriter.print("Фільтр скасовано!");
     }
 
     public void run() {
         label:
         while (true) {
-            displayPage(this.getCurrentPage(), this.getTotalPages());
+            this.displayPage(this.getCurrentPage(), this.getTotalPages());
 
-            consoleService.print("\n[N] - Наступна сторінка | [P] - Попередня сторінка | [F+P] - Фільтрація за пріоритетністю | [F+S] - Фільтрація за статусом | [C] - Скасувати фільтрацію | [Q] - Вихід");
-            String input = consoleService.readLine("Введіть номер сторінки (1-" + this.getTotalPages() + ") або команду:");
+            consoleWriter.print("\n[N] - Наступна сторінка | [P] - Попередня сторінка | [F+P] - Фільтрація за пріоритетністю | [F+S] - Фільтрація за статусом | [C] - Скасувати фільтрацію | [Q] - Вихід");
+            String input = consoleWriter.readLine("Введіть номер сторінки (1-" + this.getTotalPages() + ") або команду:");
 
             switch (input) {
-                case "Q":
+                case "Q" -> {
                     break label;
-                case "N":
+                }
+                case "N" -> {
                     if (this.hasNextPage()) {
                         this.nextPage();
                     }
-                    break;
-                case "P":
+                }
+                case "P" -> {
                     if (this.hasPrevPage()) {
                         this.prevPage();
                     }
-                    break;
-                case "F+P":
-                case "FP":
-                    this.filterByPriority();
-                    break;
-                case "F+S":
-                case "FS":
-                    this.filterByStatus();
-                    break;
-                case "C":
-                    taskList = originaTasklList;
-                    break;
-                default:
+                }
+                case "F+P", "FP" -> this.filterByPriority();
+                case "F+S", "FS" -> this.filterByStatus();
+                case "C" -> this.clearFilter();
+                default -> {
                     try {
                         int page = Integer.parseInt(input);
                         this.goToPage(page);
                     } catch (NumberFormatException e) {
-                        consoleService.print("Неправильне введення!");
+                        consoleWriter.print("Неправильне введення!");
                     }
-                    break;
+                }
             }
         }
     }
 
     private void displayPage(int currentPage, int totalPages) {
-        consoleService.print("\n╔════════════════════════════════════════════════════════╗");
-        consoleService.print("║                    ВСІ ЗАВДАННЯ                          ║");
-        consoleService.print("║               Сторінка " + currentPage + " з " + totalPages + "                           ║");
-        consoleService.print("╚════════════════════════════════════════════════════════╝\n");
+        consoleWriter.print("\n╔════════════════════════════════════════════════════════╗");
+        consoleWriter.print("║                    ВСІ ЗАВДАННЯ                        ║");
+        consoleWriter.print("║               Сторінка " + currentPage + " з " + totalPages + "                           ║");
+        consoleWriter.print("╚════════════════════════════════════════════════════════╝\n");
+
+        List<Task> taskList = this.getDisplayTasks();
 
         int startIndex = (currentPage - 1) * limitPerPage;
         int endIndex = Math.min(startIndex + limitPerPage, taskList.size());
 
         for (int i = startIndex; i < endIndex; i++) {
-            consoleService.print((i + 1) + ". " + taskList.get(i).getInfo());
+            consoleWriter.print((i + 1) + ". " + taskList.get(i).getInfo());
         }
 
-        consoleService.print("\nВсього завдань: " + taskList.size());
+        consoleWriter.print("\nВсього завдань: " + taskList.size());
     }
 }

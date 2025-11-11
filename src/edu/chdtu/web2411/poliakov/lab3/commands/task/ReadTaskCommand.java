@@ -1,27 +1,27 @@
 package edu.chdtu.web2411.poliakov.lab3.commands.task;
 
-import edu.chdtu.web2411.poliakov.lab3.services.ConsoleService;
 import edu.chdtu.web2411.poliakov.lab3.Pagination;
 import edu.chdtu.web2411.poliakov.lab3.Task;
 import edu.chdtu.web2411.poliakov.lab3.impls.MenuCommand;
+import edu.chdtu.web2411.poliakov.lab3.ConsoleWriter;
+import edu.chdtu.web2411.poliakov.lab3.services.TaskService;
 
-import java.util.List;
 
 public class ReadTaskCommand implements MenuCommand {
-    private List<Task> taskList;
-    private ConsoleService consoleService;
+    private ConsoleWriter consoleWriter;
     private Pagination pagination;
+    private TaskService taskService;
 
-    public ReadTaskCommand(List<Task> taskList) {
-        this.taskList = taskList;
-        this.consoleService = new ConsoleService();
-        this.pagination = new Pagination(5, 1, this.taskList);
+    public ReadTaskCommand() {
+        this.consoleWriter = new ConsoleWriter();
+        this.pagination = new Pagination(5, 1);
+        this.taskService = TaskService.getInstance();
     }
 
     @Override
     public void execute() {
-        if (taskList.isEmpty()) {
-            consoleService.print("\nСписок порожній");
+        if (this.taskService.getAll().isEmpty()) {
+            consoleWriter.print("\nСписок порожній");
             return;
         }
 

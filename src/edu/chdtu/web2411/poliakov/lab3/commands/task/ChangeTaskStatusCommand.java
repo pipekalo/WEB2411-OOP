@@ -1,53 +1,57 @@
 package edu.chdtu.web2411.poliakov.lab3.commands.task;
 
-import edu.chdtu.web2411.poliakov.lab3.services.ConsoleService;
 import edu.chdtu.web2411.poliakov.lab3.Task;
 import edu.chdtu.web2411.poliakov.lab3.enums.TaskType;
 import edu.chdtu.web2411.poliakov.lab3.impls.MenuCommand;
-
-import java.util.List;
+import edu.chdtu.web2411.poliakov.lab3.ConsoleWriter;
+import edu.chdtu.web2411.poliakov.lab3.services.TaskService;
 
 public class ChangeTaskStatusCommand implements MenuCommand {
-    private List<Task> taskList;
-    private ConsoleService consoleService;
+    private ConsoleWriter consoleWriter;
 
-    public ChangeTaskStatusCommand(List<Task> taskList) {
-        this.taskList = taskList;
-        this.consoleService = new ConsoleService();
+    public ChangeTaskStatusCommand() {
+        this.consoleWriter = new ConsoleWriter();
     }
 
     @Override
     public void execute() {
-        int id = consoleService.readInt("Введіть ID завдання: ");
-        Task task = taskList.stream().filter(t -> t.getId() == id).findFirst().orElse(null);
+        int id = consoleWriter.readInt("Введіть ID завдання: ");
+
+        TaskService taskService = TaskService.getInstance();
+
+        Task task = taskService.getAll().stream().filter(t -> t.getId() == id).findFirst().orElse(null);
 
         if (task == null) {
-            consoleService.print("Задача не знайдена");
+            consoleWriter.print("Задача не знайдена");
             return;
         }
 
-        consoleService.print("\nПоточний статус: " + task.getTaskType());
-        consoleService.print("1. TODO");
-        consoleService.print("2. IN_PROGRESS");
-        consoleService.print("3. DONE");
+        consoleWriter.print("\nПоточний статус: " + task.getTaskType());
+        consoleWriter.print("1. TODO");
+        consoleWriter.print("2. IN_PROGRESS");
+        consoleWriter.print("3. DONE");
 
-        String choice = consoleService.readLine("Виберіть новий статус: ");
-        TaskType taskType;
-        switch (choice) {
-            case "1":
-                taskType = TaskType.TODO;
-                break;
-            case "2":
-                taskType = TaskType.IN_PROGRESS;
-                break;
-            case "3":
-                taskType = TaskType.DONE;
-                break;
-            default:
-                consoleService.print("Неправильний вибір");
-                return;
+        String choice = consoleWriter.readLine("Виберіть новий статус: ");
+        TaskType taskType = switch (choice) {
+            case "1" -> TaskType.TODO;
+            case "2" -> TaskType.IN_PROGRESS;
+            case "3" -> TaskType.DONE;
+            default -> {
+                consoleWriter.print("Неправильний вибір");
+                yield null;
+            }
+        };
+
+        if(taskType == null) {
+            return;
         }
-        task.setTaskType(taskType);
-        consoleService.print("Статус оновлено!");
+
+        boolean success = taskService.changeStatus(id, taskType);
+
+        if(success) {
+            consoleWriter.print("Статус оновлено!");
+        } else {
+            consoleWriter.print("ПРомилка оновлення статусу");
+        }
     }
 }
