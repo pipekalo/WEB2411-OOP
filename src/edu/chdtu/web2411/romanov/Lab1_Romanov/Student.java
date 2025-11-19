@@ -3,16 +3,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Student extends Person {
+    public static int count = 0;
     public String studentID;
     public List<Subject> works;
 
-    // убрать из праметру student ID, щоб само генерувало ID
-    public Student(String firstName, String lastName, String studentID) {
+    public Student(String firstName, String lastName) {
         super(firstName, lastName);
-        this.studentID = studentID;
+
+        count++;
+
+        this.studentID = "Web-" + count;
+
         this.works = new ArrayList<>();
     }
-
     public void addWork(Subject work) {
         works.add(work);
     }

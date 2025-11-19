@@ -18,9 +18,6 @@ public class Subject implements Gradable, SubmitTable {
     }
 
     @Override
-    public boolean isSubmitted() { return submitted; }
-
-    @Override
     public void setGrade(int grade) {
         if (grade > 0 && grade <= 100) this.grade = grade;
     }
