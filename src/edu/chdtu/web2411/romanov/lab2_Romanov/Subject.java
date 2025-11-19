@@ -17,7 +17,6 @@ public class Subject implements Gradable, SubmitTable {
         System.out.println("Робота з '" + this.subjectName + "' здана.");
     }
 
-    public boolean isSubmitted() { return this.submitted; }
 
     public void setGrade(int grade) {
         if (grade > 0 && grade <= 100) {

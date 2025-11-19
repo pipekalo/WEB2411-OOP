@@ -4,23 +4,34 @@ import java.util.List;
 
 public class Student extends Person {
 
+    private static int count = 1;
+
     private String studentID;
     private GradeBook gradeBook;
 
-    public Student(String firstName, String lastName, String studentID) {
+    public Student(String firstName, String lastName) {
         super(firstName, lastName);
-        this.studentID = studentID;
-        this.gradeBook = new GradeBook(); // винести створення заліковок в інший клас напр Деканат,
-        // сюди приймати-додавати готові заліковки
-
+        count++;
+        this.studentID = "Web-" + count;
     }
 
-    public String getStudentID() { return studentID; }
-    public GradeBook getGradeBook() { return gradeBook; }
+    public void setGradeBook(GradeBook bookFromDeanery) {
+        this.gradeBook = bookFromDeanery;
+    }
 
-    public void addWork(Subject work) { gradeBook.addSubject(work); }
-
-    public List<Subject> getWorks() { return gradeBook.getSubjects(); }
+    public void addWork(Subject work) {
+        if (gradeBook != null) {
+            gradeBook.addSubject(work);
+        } else {
+            System.out.println("Помилка: У студента" + getLastName() + " немає залікової книжки");
+        }
+    }
+    public List<Subject> getWorks() {
+        if (gradeBook != null) {
+            return gradeBook.getSubjects();
+        }
+        return null;
+    }
 
     public void displayInfo() {
         System.out.println("СТУДЕНТ: " + getFirstName() + " " + getLastName() +

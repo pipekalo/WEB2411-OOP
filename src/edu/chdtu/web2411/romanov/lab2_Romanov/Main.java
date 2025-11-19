@@ -3,11 +3,17 @@ package edu.chdtu.web2411.romanov.lab2_Romanov;
 public class Main {
     public static void main(String[] args) {
 
+        Deanery deanery = new Deanery();
+
         System.out.println("Створюємо студентів");
 
-        Student Zadorozhny = new Student("Денис", "Задорожній", "Веб20033");
-        Student Melnik = new Student("Анна", "Мельник", "Веб20034");
-        GroupLeader Romanov = new GroupLeader("Максим", "Романов", "Веб20035");
+        Student Zadorozhny = new Student("Денис", "Задорожній");
+        Student Melnik = new Student("Анна", "Мельник");
+        GroupLeader Romanov = new GroupLeader("Максим", "Романов");
+
+        Zadorozhny.setGradeBook(deanery.getNewGradeBook());
+        Melnik.setGradeBook(deanery.getNewGradeBook());
+        Romanov.setGradeBook(deanery.getNewGradeBook());
 
         Subject oopLab1 = new LaboratoryWork("Програмування", 1);
         Subject dbCourseWork = new CourseWork("Бази Даних", "Сайт");
@@ -42,5 +48,7 @@ public class Main {
         System.out.println("\nРозрахунок середнього балу групи:");
         double averageResult = Web2411.calculateAverageGrade();
         System.out.println("Середній бал групи = " + averageResult);
+
+        Romanov.addBonus();
     }
 }
