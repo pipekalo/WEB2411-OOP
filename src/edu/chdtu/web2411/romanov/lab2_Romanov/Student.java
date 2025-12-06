@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Student extends Person {
 
-    private static int count = 1;
+    private static int count = 0;
 
     private String studentID;
     private GradeBook gradeBook;
