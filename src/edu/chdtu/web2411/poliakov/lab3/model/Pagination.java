@@ -3,6 +3,7 @@ package edu.chdtu.web2411.poliakov.lab3.model;
 import edu.chdtu.web2411.poliakov.lab3.ConsoleWriter;
 import edu.chdtu.web2411.poliakov.lab3.enums.TaskType;
 import edu.chdtu.web2411.poliakov.lab3.service.TaskService;
+import edu.chdtu.web2411.poliakov.lab3.service.UserService;
 
 import java.util.List;
 
