@@ -3,25 +3,41 @@
 //   Сутності: Накладна, Товар, Склад, Осередок.
 //   Завдання: Перевірити місткість осередку перед додаванням товару та розрахувати загальну вартість товарів на складі.
 
+import edu.chdtu.web2411.poliakov.labs.first_part.ConsoleWriter;
+import edu.chdtu.web2411.poliakov.labs.first_part.controller.WarehouseController;
 import edu.chdtu.web2411.poliakov.labs.first_part.enums.product.ProductUnitOfMeasure;
-import edu.chdtu.web2411.poliakov.labs.first_part.model.Product;
-import edu.chdtu.web2411.poliakov.labs.first_part.model.Warehouse;
-import edu.chdtu.web2411.poliakov.labs.first_part.model.cell.Cell;
+import edu.chdtu.web2411.poliakov.labs.first_part.model.*;
 
-import java.time.LocalDate;
+import java.util.List;
+
 
 public class Main {
     public static void main(String[] args) {
         Warehouse warehouse = new Warehouse();
-        Cell cell = warehouse.addCell("A", 3,7, 100.0);
 
-        Product milk = new Product("Milk", ProductUnitOfMeasure.LITER, 20.0, 20, LocalDate.now());
-        Product milk2 = new Product("Milk", ProductUnitOfMeasure.LITER, 20.0, 20, LocalDate.now());
+        WarehouseController controller = new WarehouseController(warehouse, new ConsoleWriter());
 
-        cell.addInCell(milk, 50);
-        cell.addInCell(milk, 51);
-        System.out.println(cell.getFreeSpace());
-        System.out.println(cell.canFit(30));
+        Product apple = new Product("Яблоко", ProductUnitOfMeasure.KILOGRAM, 15.0, 30L);
+        Product apple1 = new Product("Яблоко", ProductUnitOfMeasure.KILOGRAM, 15.0, 30L);
+        Product milk  = new Product("Молоко", ProductUnitOfMeasure.LITER, 30.0, 7L);
 
+
+        InvoiceReceipt incomingReceipt = controller.handleArrival("Test", "INV-№001", List.of(
+                new ReceiptItem(apple, 10),
+                new ReceiptItem(apple1, 20),
+                new ReceiptItem(milk, 40)
+        ));
+
+        incomingReceipt.printInvoice();
+
+        System.out.println(warehouse);
+
+        InvoiceReceipt outcomingReceipt = controller.handleRelease("Test2", "INV-№002", List.of(
+                new ReceiptItem(apple, 50)
+        ));
+
+        outcomingReceipt.printInvoice();
+
+        System.out.println(warehouse);
     }
 }

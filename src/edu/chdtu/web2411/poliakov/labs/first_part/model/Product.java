@@ -13,7 +13,6 @@ public class Product {
 
     private Double price;
     private Integer currentStock;
-    private Integer minStock;
     private LocalDate expiryDate;
 
     private String countryCode = "482";
@@ -21,18 +20,33 @@ public class Product {
     private String productCode = "00000";
 
 
-    public Product(String name, ProductUnitOfMeasure unitOfMeasure, Double price, Integer minStock, LocalDate expiryDate)
+    public Product(String name, ProductUnitOfMeasure unitOfMeasure, Double price, Long expiryDate)
     {
         this.name = name;
         this.barcode = this.generateBarcode();
         this.unitOfMeasure = unitOfMeasure;
         this.price = price;
-        this.minStock = minStock;
-        this.expiryDate = expiryDate;
+        this.expiryDate = LocalDate.now().plusDays(expiryDate);
     }
 
     public String getBarcode() {
         return this.barcode;
+    }
+
+    public Double getPrice() {
+        return this.price;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public ProductUnitOfMeasure getUnitOfMeasure() {
+        return this.unitOfMeasure;
+    }
+
+    public LocalDate getExpiryDate() {
+        return this.expiryDate;
     }
 
     private String generateBarcode() {
