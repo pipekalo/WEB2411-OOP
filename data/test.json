@@ -1,0 +1,16 @@
+[ {
+  "cellCode" : "1-1-1",
+  "items" : [ {
+    "quantity" : 20,
+    "productName" : "Яблоко",
+    "totalCost" : 240.0
+  }, {
+    "quantity" : 40,
+    "productName" : "Молоко",
+    "totalCost" : 1200.0
+  }, {
+    "quantity" : 10,
+    "productName" : "Яблоко",
+    "totalCost" : 150.0
+  } ]
+} ]

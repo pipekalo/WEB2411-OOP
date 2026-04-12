@@ -4,23 +4,25 @@ import edu.chdtu.web2411.poliakov.labs.first_part.enums.cell.CellStatus;
 import edu.chdtu.web2411.poliakov.labs.first_part.enums.cell.CellType;
 import edu.chdtu.web2411.poliakov.labs.first_part.exeptions.CellCapacityExceededException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Cell {
     private Double maxCapacity = 100.0;
-    private Double currentLoad;
+    protected Double currentLoad;
 
     private CellType type;
-    private CellStatus status;
+    protected CellStatus status;
 
     private String code;
 
 
-    private List<CellItem> items = new ArrayList<>();
+    protected List<CellItem> items;
 
 
     public Cell(String code) {
+        items = new ArrayList<>();
         this.code = code;
         this.status = CellStatus.FREE;
         this.currentLoad = 0.0;
@@ -67,7 +69,7 @@ public class Cell {
             return this.items;
         }
 
-        CellItem  cellItem = new CellItem(product, quantity);
+        CellItem  cellItem = new CellItem(product, quantity, LocalDate.now());
         items.add(cellItem);
         this.currentLoad += quantity;
         this.status = CellStatus.OCCUPIED;
@@ -119,9 +121,18 @@ public class Cell {
         return "║ ЯЧЕЙКА: " + this.code + " | items: " + this.items.size() + " | quantity: " + this.items.stream().mapToDouble(CellItem::quantity).sum();
     }
 
-    public record CellItem(Product product, Integer quantity) {
+    public record CellItem(Product product, Integer quantity, LocalDate addedAt) {
+
         public CellItem addQuantity(Integer amount) {
-            return new CellItem(this.product, this.quantity + amount);
+            return new CellItem(this.product, this.quantity + amount, LocalDate.now());
+        }
+
+        public Double getTotalCost() {
+            return product.getPrice() * quantity;
+        }
+
+        public String getName() {
+            return product.getName();
         }
     }
 }

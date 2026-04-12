@@ -3,6 +3,7 @@ package edu.chdtu.web2411.poliakov.labs.first_part.model;
 import edu.chdtu.web2411.poliakov.labs.first_part.enums.invoice.InvoiceType;
 import edu.chdtu.web2411.poliakov.labs.first_part.exeptions.CellNoFreeAvailableException;
 import edu.chdtu.web2411.poliakov.labs.first_part.exeptions.InvoiceTypeException;
+import edu.chdtu.web2411.poliakov.labs.first_part.impl.CellFactory;
 
 import java.util.*;
 
@@ -11,14 +12,14 @@ public class Warehouse {
     private final List<Invoice> history = new ArrayList<Invoice>();
 
 
-    public Warehouse() {
+    public Warehouse(CellFactory cellFactory) {
         this.cellHashMap = new LinkedHashMap<>(1 * 2 * 5);
-        generateCells(1, 2, 5);
+        generateCells(1, 2, 5, cellFactory);
     }
 
-    public Warehouse(Integer rows, Integer racks, Integer shelf) {
+    public Warehouse(Integer rows, Integer racks, Integer shelf, CellFactory cellFactory) {
         this.cellHashMap = new LinkedHashMap<String, Cell>(rows * racks * shelf);
-        this.generateCells(rows, racks, shelf);
+        this.generateCells(rows, racks, shelf, cellFactory);
     }
 
     public void putInCell(String code, Product product, Integer quantity) {
@@ -55,15 +56,19 @@ public class Warehouse {
                 .orElseThrow(() -> new CellNoFreeAvailableException("Свободная ячейка не найдена")).getCode();
     }
 
-    private void generateCells(int rows, int racks, int shelf) {
+    private void generateCells(int rows, int racks, int shelf, CellFactory cellFactory) {
         for (int r = 1; r <= rows; r++) {
             for (int ra = 1; ra <= racks; ra++) {
                 for (int s = 1; s <= shelf; s++) {
                     String code = r + "-" + ra + "-" + s;
-                    this.cellHashMap.put(code, new Cell(code));
+                    cellHashMap.put(code, cellFactory.create(code));
                 }
             }
         }
+    }
+
+    public List<Cell> getCells() {
+        return new ArrayList<>(cellHashMap.values());
     }
 
     @Override
