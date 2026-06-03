@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: edu.chdtu.web2411.poliakov.labs.first_part.test.WarehouseTest
--------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in edu.chdtu.web2411.poliakov.labs.first_part.test.WarehouseTest

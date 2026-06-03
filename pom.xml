@@ -54,8 +54,10 @@
                 <version>1.0</version>
                 <executions>
                     <execution>
+                        <id>clean-empty-folders</id>
+                        <phase>clean</phase>
                         <goals>
-                            <goal>clean-empty-folders</goal>
+                            <goal>clean-empty</goal>
                         </goals>
                     </execution>
                 </executions>
